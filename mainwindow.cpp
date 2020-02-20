@@ -33,9 +33,21 @@ void MainWindow::capture_video(void){
     cv::Mat my_frame;
     my_vid >> my_frame;
 
-    //cv::imshow("my vid",my_frame);
-
     cv::resize(my_frame,my_frame, cv::Size(480,240),0,0,CV_INTER_LINEAR);
+
+//    /////////////////////////////////////////
+//    double angle = ui->spinBox_angle->value();
+
+//    cv::Point2f center((my_frame.cols-1)/2.0, (my_frame.rows-1)/2.0);
+//    cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+//    cv::Rect bbox = cv::RotatedRect(cv::Point2f(), my_frame.size(), angle).boundingRect();
+//    rot.at<double>(0,2) += bbox.width/2.0 - my_frame.cols/2.0;
+//    rot.at<double>(1,2) += bbox.height/2.0 - my_frame.rows/2.0;
+//    cv::Mat dst;
+//    cv::warpAffine(my_frame, dst, rot, bbox.size());
+//    QImage show_my_image((uchar*)dst.data, dst.cols, dst.rows, dst.step, QImage::Format_RGB888);
+//    ui->label_video->setPixmap(QPixmap::fromImage(show_my_image));
+//    /////////////////////////////////////////
 
     QImage show_my_vid((uchar*)my_frame.data, my_frame.cols, my_frame.rows, my_frame.step, QImage::Format_RGB888);
     ui->label_video->setPixmap(QPixmap::fromImage(show_my_vid));
