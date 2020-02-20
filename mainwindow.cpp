@@ -35,7 +35,7 @@ void MainWindow::capture_video(void){
 
     //cv::imshow("my vid",my_frame);
 
-    cv::resize(my_frame,my_frame, cv::Size(360,124),0,0,CV_INTER_LINEAR);
+    cv::resize(my_frame,my_frame, cv::Size(480,240),0,0,CV_INTER_LINEAR);
 
     QImage show_my_vid((uchar*)my_frame.data, my_frame.cols, my_frame.rows, my_frame.step, QImage::Format_RGB888);
     ui->label_video->setPixmap(QPixmap::fromImage(show_my_vid));
