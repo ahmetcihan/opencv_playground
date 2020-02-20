@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    my_vid.open("rtsp://192.168.1.240/stream1");
     my_image = cv::imread("/home/ahmet/Desktop/euler_copy.jpg",CV_LOAD_IMAGE_COLOR);
 
     cv::resize(my_image,my_image, cv::Size(194,259),0,0,CV_INTER_LINEAR);
@@ -22,7 +23,24 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),ui->horizontalSlider_angle,SLOT(setValue(int)));
     connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),this,SLOT(rotate_euler()));
 
+    periodic_timer = new QTimer(this);
+    periodic_timer->setInterval(30);
+    connect(periodic_timer,SIGNAL(timeout()),this,SLOT(capture_video()));
+    periodic_timer->start();
 
+}
+void MainWindow::capture_video(void){
+    cv::Mat my_frame;
+    my_vid >> my_frame;
+
+    //cv::imshow("my vid",my_frame);
+
+    cv::resize(my_frame,my_frame, cv::Size(360,124),0,0,CV_INTER_LINEAR);
+
+    QImage show_my_vid((uchar*)my_frame.data, my_frame.cols, my_frame.rows, my_frame.step, QImage::Format_RGB888);
+    ui->label_video->setPixmap(QPixmap::fromImage(show_my_vid));
+
+    my_frame.release();
 }
 void MainWindow::negative_euler(void){
     cv::Mat neg_im;
