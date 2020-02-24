@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    my_vid.open("rtsp://192.168.1.240/stream1");
+    my_vid.open("rtsp://192.168.1.240/stream2");
     my_image = cv::imread("/home/ahmet/Desktop/euler_copy.jpg",CV_LOAD_IMAGE_COLOR);
 
     cv::resize(my_image,my_image, cv::Size(194,259),0,0,CV_INTER_LINEAR);
@@ -21,36 +21,123 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->horizontalSlider_angle,SIGNAL(valueChanged(int)),ui->spinBox_angle,SLOT(setValue(int)));
     connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),ui->horizontalSlider_angle,SLOT(setValue(int)));
-    connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),this,SLOT(rotate_euler()));
+    //connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),this,SLOT(rotate_euler()));
 
     periodic_timer = new QTimer(this);
-    periodic_timer->setInterval(30);
-    connect(periodic_timer,SIGNAL(timeout()),this,SLOT(capture_video()));
+    periodic_timer->setInterval(200);
+    //connect(periodic_timer,SIGNAL(timeout()),this,SLOT(capture_video()));
+    connect(periodic_timer,SIGNAL(timeout()),this,SLOT(detect_my_face()));
     periodic_timer->start();
 
+    QPixmap ahmet_resim("/home/ahmet/Desktop/ahmet.jpg");
+    ui->label_ahmet->setPixmap(ahmet_resim);
+
+
+    //my_vid.set(CV_CAP_PROP_FPS,10);
+
+    //detect_my_face();
+}
+void MainWindow::detectAndDraw( cv::Mat& img, cv::CascadeClassifier& cascade, cv::CascadeClassifier& nestedCascade, double scale){
+    cv::vector<cv::Rect> faces, faces2;
+    cv::Mat gray, smallImg;
+
+    cv::cvtColor( img, gray, cv::COLOR_BGR2GRAY ); // Convert to Gray Scale
+    double fx = 1 / scale;
+
+    // Resize the Grayscale Image
+    cv::resize( gray, smallImg, cv::Size(), fx, fx, cv::INTER_LINEAR );
+    cv::equalizeHist( smallImg, smallImg );
+
+    // Detect faces of different sizes using cascade classifier
+    cascade.detectMultiScale( smallImg, faces, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(50, 50) );
+
+    // Draw circles around the faces
+    for ( size_t i = 0; i < faces.size(); i++ ){
+        cv::Rect r = faces[i];
+        cv::Mat smallImgROI;
+        cv::vector<cv::Rect> nestedObjects;
+        cv::Point center;
+        cv::Scalar color = cv::Scalar(255, 0, 0); // Color for Drawing tool
+        int radius;
+
+        double aspect_ratio = (double)r.width/r.height;
+        if( 0.75 < aspect_ratio && aspect_ratio < 1.3 )
+        {
+            center.x = cvRound((r.x + r.width*0.5)*scale);
+            center.y = cvRound((r.y + r.height*0.5)*scale);
+            radius = cvRound((r.width + r.height)*0.25*scale);
+            circle( img, center, radius, color, 3, 8, 0 );
+        }
+        else
+            rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                    cvPoint(cvRound((r.x + r.width-1)*scale),
+                    cvRound((r.y + r.height-1)*scale)), color, 3, 8, 0);
+        if( nestedCascade.empty() )
+            continue;
+        smallImgROI = smallImg( r );
+
+//        // Detection of eyes int the input image
+//        nestedCascade.detectMultiScale( smallImgROI, nestedObjects, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30) );
+
+//        // Draw circles around eyes
+//        for ( size_t j = 0; j < nestedObjects.size(); j++ )
+//        {
+//            cv::Rect nr = nestedObjects[j];
+//            center.x = cvRound((r.x + nr.x + nr.width*0.5)*scale);
+//            center.y = cvRound((r.y + nr.y + nr.height*0.5)*scale);
+//            radius = cvRound((nr.width + nr.height)*0.25*scale);
+//            circle( img, center, radius, color, 3, 8, 0 );
+//        }
+    }
+
+    // Show Processed Image with detected faces
+    imshow( "Face Detection", img );
+}
+void MainWindow::detect_my_face(void){
+    QElapsedTimer my_timer;
+    my_timer.start();
+    cv::CascadeClassifier cascade, nestedCascade;
+    double scale = 1;
+
+    nestedCascade.load("/usr/local/share/OpenCV/haarcascades/haarcascade_eye_tree_eyeglasses.xml");
+    cascade.load("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalcatface.xml");
+
+    //cv::Mat frame1 = cv::imread("/home/ahmet/Desktop/ahmet.jpg",CV_LOAD_IMAGE_COLOR);
+
+    cv::Mat frame1;
+    my_vid >> frame1;
+    //cv::resize(frame1,frame1, cv::Size(480,270),0,0,CV_INTER_LINEAR);
+    //cv::resize(frame1,frame1, cv::Size(720,405),0,0,CV_INTER_LINEAR);
+
+    detectAndDraw( frame1, cascade, nestedCascade, scale );
+
+    qDebug() << "elpased" << my_timer.elapsed();
 }
 void MainWindow::capture_video(void){
     cv::Mat my_frame;
     my_vid >> my_frame;
 
-    cv::resize(my_frame,my_frame, cv::Size(480,240),0,0,CV_INTER_LINEAR);
+    //find fps of the vid
+    qDebug() << "fps" << my_vid.get(CV_CAP_PROP_FPS);
 
-//    /////////////////////////////////////////
-//    double angle = ui->spinBox_angle->value();
+    cv::resize(my_frame,my_frame, cv::Size(480,270),0,0,CV_INTER_LINEAR);
 
-//    cv::Point2f center((my_frame.cols-1)/2.0, (my_frame.rows-1)/2.0);
-//    cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
-//    cv::Rect bbox = cv::RotatedRect(cv::Point2f(), my_frame.size(), angle).boundingRect();
-//    rot.at<double>(0,2) += bbox.width/2.0 - my_frame.cols/2.0;
-//    rot.at<double>(1,2) += bbox.height/2.0 - my_frame.rows/2.0;
-//    cv::Mat dst;
-//    cv::warpAffine(my_frame, dst, rot, bbox.size());
-//    QImage show_my_image((uchar*)dst.data, dst.cols, dst.rows, dst.step, QImage::Format_RGB888);
-//    ui->label_video->setPixmap(QPixmap::fromImage(show_my_image));
-//    /////////////////////////////////////////
+    /////////////////////////////////////////
+    double angle = ui->spinBox_angle->value();
 
-    QImage show_my_vid((uchar*)my_frame.data, my_frame.cols, my_frame.rows, my_frame.step, QImage::Format_RGB888);
-    ui->label_video->setPixmap(QPixmap::fromImage(show_my_vid));
+    cv::Point2f center((my_frame.cols-1)/2.0, (my_frame.rows-1)/2.0);
+    cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+    cv::Rect bbox = cv::RotatedRect(cv::Point2f(), my_frame.size(), angle).boundingRect();
+    rot.at<double>(0,2) += bbox.width/2.0 - my_frame.cols/2.0;
+    rot.at<double>(1,2) += bbox.height/2.0 - my_frame.rows/2.0;
+    cv::Mat dst;
+    cv::warpAffine(my_frame, dst, rot, bbox.size());
+    QImage show_my_image((uchar*)dst.data, dst.cols, dst.rows, dst.step, QImage::Format_RGB888);
+    ui->label_video->setPixmap(QPixmap::fromImage(show_my_image));
+    /////////////////////////////////////////
+
+//    QImage show_my_vid((uchar*)my_frame.data, my_frame.cols, my_frame.rows, my_frame.step, QImage::Format_RGB888);
+//    ui->label_video->setPixmap(QPixmap::fromImage(show_my_vid));
 
     my_frame.release();
 }
