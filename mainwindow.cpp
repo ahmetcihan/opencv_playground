@@ -7,13 +7,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    my_vid.open("rtsp://192.168.1.240/stream2");
-    my_image = cv::imread("/home/ahmet/Desktop/euler_copy.jpg",CV_LOAD_IMAGE_COLOR);
+    qDebug() << "geldi";
+    //my_vid.open("rtsp://192.168.1.240/stream2");
+    my_image = cv::imread("/home/ahmet/Desktop/euler_copy.jpg",cv::IMREAD_COLOR);
+    qDebug() << "geldi 2";
 
-    cv::resize(my_image,my_image, cv::Size(194,259),0,0,CV_INTER_LINEAR);
-    cv::cvtColor(my_image,my_image,CV_BGR2RGB); //Qt reads in RGB whereas CV in BGR
+    cv::resize(my_image,my_image, cv::Size(194,259),0,0,cv::INTER_LINEAR);
+    cv::cvtColor(my_image,my_image,cv::COLOR_BGR2RGB); //Qt reads in RGB whereas CV in BGR
 
-    //cv::imshow("MY image",my_image);
+    cv::imshow("MY image",my_image);
     QImage show_my_image((uchar*)my_image.data, my_image.cols, my_image.rows, my_image.step, QImage::Format_RGB888);
     ui->label_image->setPixmap(QPixmap::fromImage(show_my_image));
 
@@ -21,17 +23,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->horizontalSlider_angle,SIGNAL(valueChanged(int)),ui->spinBox_angle,SLOT(setValue(int)));
     connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),ui->horizontalSlider_angle,SLOT(setValue(int)));
-    //connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),this,SLOT(rotate_euler()));
+    connect(ui->spinBox_angle,SIGNAL(valueChanged(int)),this,SLOT(rotate_euler()));
 
     periodic_timer = new QTimer(this);
     periodic_timer->setInterval(200);
     //connect(periodic_timer,SIGNAL(timeout()),this,SLOT(capture_video()));
-    connect(periodic_timer,SIGNAL(timeout()),this,SLOT(detect_my_face()));
-    periodic_timer->start();
-
-    QPixmap ahmet_resim("/home/ahmet/Desktop/ahmet.jpg");
-    ui->label_ahmet->setPixmap(ahmet_resim);
-
+    //connect(periodic_timer,SIGNAL(timeout()),this,SLOT(detect_my_face()));
+    //periodic_timer->start();
 
     //my_vid.set(CV_CAP_PROP_FPS,10);
 
@@ -69,8 +67,8 @@ void MainWindow::detectAndDraw( cv::Mat& img, cv::CascadeClassifier& cascade, cv
             circle( img, center, radius, color, 3, 8, 0 );
         }
         else
-            rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
-                    cvPoint(cvRound((r.x + r.width-1)*scale),
+            rectangle( img, cv::Point(cvRound(r.x*scale), cvRound(r.y*scale)),
+                    cv::Point(cvRound((r.x + r.width-1)*scale),
                     cvRound((r.y + r.height-1)*scale)), color, 3, 8, 0);
         if( nestedCascade.empty() )
             continue;
@@ -118,9 +116,9 @@ void MainWindow::capture_video(void){
     my_vid >> my_frame;
 
     //find fps of the vid
-    qDebug() << "fps" << my_vid.get(CV_CAP_PROP_FPS);
+    qDebug() << "fps" << my_vid.get(cv::CAP_PROP_FPS);
 
-    cv::resize(my_frame,my_frame, cv::Size(480,270),0,0,CV_INTER_LINEAR);
+    cv::resize(my_frame,my_frame, cv::Size(480,270),0,0,cv::INTER_LINEAR);
 
     /////////////////////////////////////////
     double angle = ui->spinBox_angle->value();

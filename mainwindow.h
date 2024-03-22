@@ -5,14 +5,18 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QDebug>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/opencv.hpp>
+#include <core/core.hpp>
+#include <highgui/highgui.hpp>
+#include <imgproc/imgproc.hpp>
+#include <objdetect/objdetect.hpp>
+#include <opencv.hpp>
 
 namespace Ui {
 class MainWindow;
+}
+namespace cv
+{
+    using std::vector;
 }
 
 class MainWindow : public QMainWindow

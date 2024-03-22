@@ -19,10 +19,10 @@ HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += /usr/include
-INCLUDEPATH += /usr/local/include/opencv2
+#INCLUDEPATH += /usr/include
+INCLUDEPATH += /usr/local/include/opencv4/opencv2
 
-LIBS += -L/usr/lib/x86_64-linux-gnu \
+LIBS += -L/usr/local/lib \
 -lopencv_core \
 -lopencv_imgproc \
 -lopencv_imgcodecs \
@@ -32,14 +32,9 @@ LIBS += -L/usr/lib/x86_64-linux-gnu \
 -lopencv_features2d \
 -lopencv_calib3d \
 -lopencv_objdetect \
--lopencv_contrib \
--lopencv_legacy \
 -lopencv_flann \
--lopencv_gpu \
 -lopencv_photo \
 -lopencv_stitching \
--lopencv_ts \
--lopencv_videostab
-
-
+-lopencv_videostab \
+-lopencv_videoio
 
