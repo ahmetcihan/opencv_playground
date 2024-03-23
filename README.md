@@ -15,4 +15,4 @@ Functionalities:
     Video Streaming: Stream video from an IP camera and displays it within the Qt application.
     Face Detection: Detect faces in real-time from a video stream or using a picture loaded into the application. The OpenCV face detection algorithm is used, and detected faces are visualized within the Qt GUI.
 
-![screenshot]([path/to/your/image.jpg](https://github.com/ahmetcihan/opencv_playground/blob/master/Screenshot%20from%202024-03-22%2018-17-14.png) 
+![screenshot](https://github.com/ahmetcihan/opencv_playground/blob/master/Screenshot%20from%202024-03-22%2018-17-14.png)
