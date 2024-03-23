@@ -5,11 +5,12 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QDebug>
-#include <core/core.hpp>
-#include <highgui/highgui.hpp>
-#include <imgproc/imgproc.hpp>
-#include <objdetect/objdetect.hpp>
+#include <core.hpp>
+#include <highgui.hpp>
+#include <imgproc.hpp>
+#include <objdetect.hpp>
 #include <opencv.hpp>
+#include <face.hpp>
 
 namespace Ui {
 class MainWindow;
@@ -31,9 +32,8 @@ private:
     Ui::MainWindow *ui;
 
     QTimer *periodic_timer;
-
-    cv::Mat my_image;
-    cv::VideoCapture my_vid;
+    cv::Mat sample_image;
+    cv::VideoCapture ip_cam_vid;
 
 public slots:
     void rotate_euler(void);

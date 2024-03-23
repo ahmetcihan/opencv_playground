@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>20</y>
+      <y>30</y>
       <width>324</width>
       <height>324</height>
      </rect>
@@ -98,13 +98,45 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>20</y>
+      <y>30</y>
       <width>480</width>
       <height>270</height>
      </rect>
     </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>324</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EULER</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>10</y>
+      <width>324</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>IP CAMERA</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
